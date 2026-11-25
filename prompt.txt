@@ -1,0 +1,7 @@
+Build a paper-trading bot for the make.fun Pump.fun Replay Sprint bounty (agent-fun/replay/v2).
+
+The bot is a single main.ts run on Node 22. It speaks newline-delimited JSON with the harness over stdin/stdout: a hello message first (capital, caps, fees), then one batch per slot window (seq, slot, events, marks, fills, account), then done. It must answer every batch with exactly one reply line echoing the batch seq and carrying that batch's orders (buy with quote_lamports, sell with token_amount, each with a unique client_id and max_slippage_bps).
+
+Strategy: momentum breakout with strict exits, all decisions deterministic (no network, no clock, no randomness, BigInt price math from virtual reserves). Buy 0.20 SOL slices (clamped under the 100 bps real-reserve cap, floor 0.02 SOL) in mints whose price bounced at least 8% off their recent low with buy-side trade flow, at most 5 open positions. Exit on +25% take-profit, -15% stop-loss, 12% trailing stop from the peak since entry, bonding-curve completion, or a 2000-batch max hold. Track cash and positions from the harness account snapshot each batch, never from local bookkeeping.
+
+Also write README.md (with the three make.fun badge links, strategy description, how to run, referral footer) and a MIT LICENSE with the SPDX line. Verify with the kit's grade-local (process driver), check the bot runs twice byte-identically, and test it in a read-only sandbox as uid 65534.
